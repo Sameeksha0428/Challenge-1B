@@ -46,7 +46,6 @@ Edit
 project_root/
 ├── input2/                  # Input PDFs
 ├── output/                  # Output JSONs
-├── persona_input.json       # Persona + Task input
 ├── local_minilm/            # Local MiniLM model folder
 ├── main.py                  # Main processing script
 ├── requirements.txt
