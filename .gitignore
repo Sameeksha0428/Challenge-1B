@@ -1,0 +1,19 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore local virtual environment
+venv/
+
+# Ignore model folder (too big for GitHub)
+local_minilm/
+
+# Ignore output files
+output/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment/config files
+.env
