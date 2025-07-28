@@ -1,0 +1,29 @@
+# Use a lightweight base image with Python
+FROM --platform=linux/amd64 python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
+
+# Install system dependencies and Python packages
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libgl1 \
+    poppler-utils \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the model, source code, and inputs
+COPY local_model ./local_model
+COPY main.py .
+COPY persona_input2.json .
+COPY input2 ./input2
+
+# Ensure output folder exists
+RUN mkdir -p /app/output
+
+# Default command to run the main script
+CMD ["python", "main.py"]
