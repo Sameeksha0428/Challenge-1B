@@ -1,80 +1,127 @@
-# Challenge_1b - Persona-Based Section Extraction
+# Adobe Hackathon Round 1B – Persona-Driven Document Intelligence (Offline)
 
-This repository contains the solution for Round 1B of the Adobe India Hackathon - "Connecting the Dots" Challenge.
+## 📌 Challenge Objective
 
-# Objective
+Build an **intelligent document analyst** that extracts and prioritizes the most relevant sections from a set of PDF documents based on:
 
-Given a collection of PDF documents and a specific persona with a job-to-be-done, the task is to:
+- A defined **persona** (e.g., Travel Planner, Analyst)
+- A specific **job-to-be-done** (e.g., "Plan a 4-day trip", "Summarize financial reports")
 
-- Identify and rank the most relevant sections from the documents
-- Extract meaningful sub-sections
-- Output a structured JSON with relevance-based ranking
+The system outputs a structured JSON containing:
+- Metadata
+- Top relevant sections
+- Subsection analysis
 
-This system enables persona-driven document summarization for intelligent reading.
+All processing is done **offline**, under **1GB**, on **CPU only**, and within **60 seconds**.
 
-# Approach
+---
 
-We use a semantic, MiniLM-based model to understand document content and match it with the persona's task. The pipeline includes:
+## 🔧 How It Works
 
-- Text extraction using `pdfplumber`
-- Sentence segmentation and cleanup
-- Semantic similarity scoring with pre-downloaded MiniLM
-- Ranking based on cosine similarity
-- Extraction of top-matching sections and refined sub-sections
+1. Reads persona, task, and PDF filenames from `persona_input.json`
+2. Loads PDFs from `/input2/` folder
+3. Extracts paragraphs using `pdfplumber`
+4. Ranks content relevance using **MiniLM-based semantic similarity**
+5. Outputs `output_<persona>_<timestamp>.json` in `/output/` folder
 
-All processing is done offline and on CPU.
+---
 
-# Folder Structure
-
-├── input/ # Folder containing input PDFs
-
-├── output/ # Folder where output JSONs will be saved
-
-├── local_minilm/ # Offline MiniLM model directory
-
-├── main.py # Main processing script
-
-├── requirements.txt # Python dependencies
-
-├── Dockerfile # Docker configuration
-
-└── README.md # Project documentation
-
-# Download Minilm locally
-
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-model.save('./local_minilm')
-
-# Output Format
-
-The generated output will follow this structure:
+## 🧠 Example Use Case
 
 ```json
 {
+  "persona": { "role": "Travel Planner" },
+  "job_to_be_done": { "task": "Plan a trip of 4 days for a group of 10 college friends." },
+  "documents": [
+    { "filename": "South of France - Cities.pdf" },
+    { "filename": "South of France - Cuisine.pdf" }
+  ]
+}
+✅ Output JSON will contain top-ranked sections and refined text per document.
+
+🧾 Folder Structure
+graphql
+Copy
+Edit
+project_root/
+├── input2/                  # Input PDFs
+├── output/                  # Output JSONs
+├── persona_input.json       # Persona + Task input
+├── local_minilm/            # Local MiniLM model folder
+├── main.py                  # Main processing script
+├── requirements.txt
+└── README.md
+📥 Model Download
+⚠️ This solution uses a local MiniLM model (under 200MB) stored offline.
+
+📦 Download it here:
+👉 MiniLM Model Folder (Google Drive): https://drive.google.com/drive/folders/1KlDc0x7Yh6SpHU9Xbx3QzFvEpCHxOiuH?usp=sharing
+
+After downloading:
+
+Unzip if necessary
+
+Place the folder as local_minilm/ in the project root
+
+▶️ Run the Project
+1. Install dependencies
+bash
+Copy
+Edit
+pip install -r requirements.txt
+2. Add PDFs to /input2/ and configure persona_input.json
+3. Run the script
+bash
+Copy
+Edit
+python main.py
+JSON output will be saved to /output/ with a timestamp.
+
+📦 requirements.txt
+nginx
+Copy
+Edit
+pdfplumber
+sentence-transformers
+torch
+✅ Constraints Covered
+Constraint	✅ Covered
+Model size < 1GB	✅ Yes
+Runs offline	✅ Yes
+CPU-only	✅ Yes
+Execution < 60s	✅ Yes
+
+💡 Output Format (Simplified)
+json
+Copy
+Edit
+{
   "metadata": {
-    "documents": ["doc1.pdf", "doc2.pdf"],
-    "persona": "PhD Researcher in Computational Biology",
-    "job": "Prepare a literature review on GNNs for Drug Discovery",
-    "timestamp": "2025-07-28T13:00:00"
+    "persona": "Travel Planner",
+    "job_to_be_done": "Plan a trip...",
+    "processing_timestamp": "2025-07-25T14:00:00"
   },
   "extracted_sections": [
     {
-      "document": "doc1.pdf",
-      "page": 4,
-      "section_title": "Graph Neural Networks in Drug Interaction",
-      "importance_rank": 1
-    },
-    ...
+      "document": "South of France - Cuisine.pdf",
+      "section_title": "Culinary Experiences",
+      "importance_rank": 1,
+      "page_number": 6
+    }
   ],
   "subsection_analysis": [
     {
-      "document": "doc1.pdf",
-      "page": 4,
-      "refined_text": "GNNs are used to model molecular interactions..."
+      "document": "South of France - Cuisine.pdf",
+      "refined_text": "In addition to dining at...",
+      "page_number": 6
     }
   ]
 }
+🙌 Built With
+Python 🐍
 
+PDFPlumber 📄
 
+MiniLM (Sentence Transformers) 🤖
 
+JSON 📦
